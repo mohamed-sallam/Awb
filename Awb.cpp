@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	string Prog;
 	getline(progFile, Prog);
 	// Check if the file is exist or not
-	bool isFileExist{true};
+	bool isFileExist {true};
 	if (progFile.fail())
 		isFileExist = false;
 	progFile.close();
@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
 		if (!strcmp(argv[1], "-su") && isFileExist)
 		{
 			string lmt;
-			for (int i {0}; i < 120; i++)
+			// 2 mins after PC start up
+			for (char i {121}; --i; sleep(1))
 			{
 				ifstream lmtFile("lmt.time");
 				getline(lmtFile, lmt);
@@ -45,7 +46,6 @@ int main(int argc, char *argv[])
 					lmtFile.close();
 					break;
 				}
-				sleep(1);
 			}
 
 			long duration{stol(lmt) - time(0)};
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 			string program, programs;
 			cout << "Enter names of processes (after finishing enter @ and press <enter>):\n>> ";
 			cin >> programs;
-			while (true)
+			while (1)
 			{
 				cout << ">> ";
 				cin >> program;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
 			if (timeInSec <= 8 * 3600 && timeInSec > 0)
 			{
-				for (const unsigned int lmt{time(0) + timeInSec}; time(0) < lmt;)
+				for (const unsigned lmt{time(0) + timeInSec}; time(0) < lmt; sleep(1))
 				{
 					system("pkill -f " + Prog);
 					ofstream progFile("prog.block", ofstream::trunc);
@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
 					ofstream lmtFile("lmt.time", ofstream::trunc);
 					lmtFile << lmt;
 					lmtFile.close();
-					sleep(1);
 				}
 			}
 			else
