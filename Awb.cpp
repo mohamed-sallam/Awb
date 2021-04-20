@@ -7,7 +7,7 @@
 #include <cstdlib>	// For generating random numbers
 
 using namespace std;
-const string programNAME{"./blocker"};
+const string programNAME{"./Awb"};
 
 // Functions prototypes
 int toSec(string _time);
