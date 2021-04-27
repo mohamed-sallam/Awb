@@ -5,7 +5,6 @@ CREATE TABLE `users`(
     `access_token` VARCHAR(255) NOT NULL,
     `is_male` BOOL NOT NULL,
     `time_zone` TINYINT NOT NULL,
-    `time_limit` BIGINT UNSIGNED NOT NULL DEFAULT 0
+    `time_limit` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`)
 );
-ALTER TABLE
-    `users` ADD PRIMARY KEY `users_id_primary`(`id`);
