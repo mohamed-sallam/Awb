@@ -1,2 +1,3 @@
 # Awb
-An open-source cross-platform application to quit electronic devices addiction.
+A free and open-source software to quit digital addiction for Linux distros.
+
