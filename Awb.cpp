@@ -2,9 +2,15 @@
 #include <fstream>	// For processing files
 #include <string>	// For CPP-string operations
 #include <cstring>	// For C-string operations
-#include <unistd.h> // For sleep()
-#include <ctime>	// For time(0)
+#include <unistd.h> // For sleep() and access()
+#include <ctime>	// For time()
 #include <cstdlib>	// For generating random numbers
+#include <curl/curl.h>
+
+#define logInURL "http://localhost/login.php"
+#define cookiesFile "cookies.txt"
+#define tmpFile "tmp.txt"
+// g++ test.cpp -lcurl
 
 using namespace std;
 const string programNAME{"./Awb"};
@@ -14,7 +20,7 @@ int toSec(string _time);
 string exec(string command);
 int system(string __command) {return system(__command.c_str());}
 int rand(unsigned min, unsigned max, unsigned seed = time(0)) {return (srand(seed), min + rand() % (max - min + 1));}
-
+bool isLoggedIn();
 
 int main(int argc, char *argv[])
 {
@@ -30,7 +36,7 @@ int main(int argc, char *argv[])
 	progFile.close();
 
 	if (argc == 1)
-		cout << "PBlocker is working...\nUse our applet!";
+		cout << programNAME << " is working...\nUse our applet!";
 	else if (argc == 2)
 	{
 		if (!strcmp(argv[1], "-su") && isFileExist)
@@ -54,6 +60,7 @@ int main(int argc, char *argv[])
 		}
 		else if (!strcmp(argv[1], "-1t"))
 		{
+
 			ofstream lmtFile("lmt.time", ofstream::trunc);
 			lmtFile << 0;
 			lmtFile.close();
@@ -105,7 +112,7 @@ int main(int argc, char *argv[])
 				cout << "Error(invalid_time_value)";
 		}
 		else
-			system("gnome-terminal -- " + programNAME + " -1t");
+			return main(2, {programNAME, "-1t"});
 	}
 	else
 		cout << "Error(arg2)";
@@ -155,4 +162,38 @@ string exec(string command)
 
 	pclose(pipe);
 	return result;
+}
+
+bool isLoggedIn()
+{
+	if(access(cookiesFile, F_OK)) 
+		return false;
+	
+    CURL *curl {curl_easy_init()};
+	FILE *fp {fopen(tmpFile, "w+")};
+	
+	curl_global_init(CURL_GLOBAL_ALL);
+	size_t len {0};
+	if(curl) 
+    {
+		curl_easy_setopt(curl, CURLOPT_URL, logInURL);
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookiesFile);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
+
+		if(!curl_easy_perform(curl))
+		{
+			char *line {nullptr};
+			getline(&line, &len, fp);
+			len = atoi(line);
+			free(line);
+		}
+		else
+			return false;
+		
+		curl_easy_cleanup(curl);
+	}
+	curl_global_cleanup();
+    fclose(fp);
+	return len;
 }
